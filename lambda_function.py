@@ -8,16 +8,13 @@ dynamodb = boto3.resource('dynamodb')
 tabela = dynamodb.Table('Inventario_Equipamentos')
 
 def lambda_handler(event, context):
-    # Identifica o ficheiro que foi carregado no S3
     bucket = event['Records'][0]['s3']['bucket']['name']
     key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     
-    # Lê o conteúdo do ficheiro
     response = s3.get_object(Bucket=bucket, Key=key)
     conteudo = response['Body'].read().decode('utf-8')
     linhas = conteudo.split('\n')
     
-    # Processa cada linha e guarda no DynamoDB
     for linha in linhas:
         if linha.strip():
             partes = linha.split(',')
@@ -31,4 +28,4 @@ def lambda_handler(event, context):
             }
             tabela.put_item(Item=item_formatado)
             
-    return {'statusCode': 200, 'body': 'Processado com sucesso'}
+    return {'statusCode': 200, 'body': 'Sucesso'}
